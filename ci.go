@@ -144,6 +144,15 @@ func githubActions() (ci CI, err error) {
 		os.Getenv("GITHUB_RUN_ID"),
 	)
 	ci.PR.Revision = os.Getenv("GITHUB_SHA")
+	ref := os.Getenv("GITHUB_REF")
+	if !strings.HasPrefix(ref, "refs/pull") {
+		return ci, nil
+	}
+	pr := strings.Split(ref, "/")[2]
+	if pr == "" {
+		return ci, nil
+	}
+	ci.PR.Number, err = strconv.Atoi(pr)
 	return ci, err
 }
 
